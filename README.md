@@ -143,6 +143,78 @@ public String joinStudentNames() {
 }
 ```
 
+## Analisis Log JMeter
+
+Setelah menganalisis file JTL dari Apache JMeter sebelum dan sesudah optimasi, beberapa peningkatan performa yang signifikan dapat diamati:
+
+### Endpoint /all-student
+
+**Sebelum Optimasi:**
+- Waktu respons rata-rata: 150,078 ms
+- Throughput rendah
+- Penggunaan memori tinggi (2769148 bytes)
+- Waktu respons tertinggi: 160,227 ms
+
+**Sesudah Optimasi:**
+- Waktu respons rata-rata: 6,113 ms
+- Throughput meningkat signifikan
+- Penggunaan memori tetap (2769148 bytes) namun performa lebih baik
+- Waktu respons tertinggi: 6,873 ms
+
+**Peningkatan:** Waktu respons berkurang hingga 96%, membuktikan efektifitas penggantian logika manual dengan metode repository yang lebih efisien.
+
+### Endpoint /all-student-name
+
+**Sebelum Optimasi:**
+- Waktu respons rata-rata: 9,622 ms
+- Throughput sedang
+- Penggunaan memori konsisten (312955 bytes)
+- Variasi waktu respons dari 4,304 ms hingga 10,980 ms
+
+**Sesudah Optimasi:**
+- Waktu respons rata-rata: 7,481 ms
+- Throughput meningkat
+- Penggunaan memori tetap sama (312955 bytes)
+- Waktu respons lebih konsisten
+
+**Peningkatan:** Waktu respons berkurang sekitar 22%, menunjukkan penggantian String concatenation dengan Collectors.joining() memberikan peningkatan moderat namun signifikan.
+
+### Endpoint /highest-gpa
+
+**Sebelum Optimasi:**
+- Waktu respons rata-rata: 445,5 ms
+- Operasi manual dalam mencari nilai maksimum
+- Penggunaan memori rendah (290 bytes)
+- Waktu respons bervariasi dengan nilai tertinggi 501 ms
+
+**Sesudah Optimasi:**
+- Waktu respons rata-rata: 142,7 ms
+- Operasi stream untuk mencari nilai maksimum
+- Penggunaan memori tetap (290 bytes)
+- Waktu respons jauh lebih konsisten dan rendah
+
+**Peningkatan:** Waktu respons berkurang hingga 68%, menunjukkan keunggulan penggunaan Stream API dan Comparator untuk mencari nilai maksimum.
+
+## Kesimpulan
+
+Optimasi kode telah menghasilkan peningkatan performa yang signifikan:
+
+1. **Endpoint /all-student**: Peningkatan dramatis sebesar 96% dalam waktu respons melalui penghapusan loop bersarang dan penggunaan repository method secara langsung.
+
+2. **Endpoint /all-student-name**: Peningkatan moderat sebesar 22% melalui penggunaan teknik penggabungan string yang lebih efisien dengan Stream API.
+
+3. **Endpoint /highest-gpa**: Peningkatan substansial sebesar 68% dengan mengadopsi Stream API dan Comparator untuk operasi pencarian nilai maksimum.
+
+Faktor-faktor yang berkontribusi pada peningkatan performa:
+
+- Pengurangan kompleksitas algoritma dari O(n²) menjadi O(n)
+- Eliminasi alokasi memori yang tidak perlu
+- Penggunaan fitur Java modern (Stream API, method references)
+- Pengurangan jumlah kueri database
+- Pendekatan declarative vs imperative programming
+
+Optimasi terbukti efektif dalam meningkatkan respons sistem secara keseluruhan tanpa mengubah fungsionalitas. Sistem yang dioptimasi juga menunjukkan performa yang lebih konsisten dengan variasi waktu respons yang lebih rendah, menunjukkan peningkatan stabilitas sistem di bawah beban.
+
 > 1. What is the difference between the approach of performance testing with JMeter and profiling with IntelliJ Profiler in the context of optimizing application performance?
 
 Performance testing dengan JMeter dan profiling dengan IntelliJ Profiler memiliki pendekatan yang berbeda dalam konteks optimasi performa aplikasi. JMeter berfokus pada pengujian beban eksternal, dimana kita dapat mensimulasikan banyak pengguna yang mengakses aplikasi secara bersamaan untuk melihat bagaimana sistem merespons di bawah kondisi beban tertentu. Hal ini terlihat dari screenshot di atas dimana JMeter menampilkan hasil dari berbagai thread group dengan label seperti "all-student request" dan "highest-gpa request".
